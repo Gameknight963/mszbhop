@@ -25,6 +25,10 @@ namespace mszbhop
 
             GameObject terrainGen = new GameObject("TerrainGenerator");
             terrainGen.AddComponent<TerrainGenerator>();
+
+            GameObject.Find("World/House/Doors/ExitFrame/ExitDoor").SetActive(false);
+            GameObject.Find("World/Game/Acts/Hello Mita/Interactables 1/I Exit Door 1 ").SetActive(false);
+            GameObject.Find("World/Game/Acts/Quality Time/Interactables 2/I ExitDoor 2").SetActive(false);
         }
     }
 }

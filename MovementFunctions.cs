@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using Newtonsoft.Json;
 
 namespace mszbhop
 {
@@ -8,8 +9,8 @@ namespace mszbhop
 
         public static float MaxGroundSpeed = 320f * HU_TO_UNITY;
         public static float GroundAccel = 600f * HU_TO_UNITY;
-        public static float AirAccel = 10f * HU_TO_UNITY;
-        public static float Friction = 4f;
+        public static float AirAccel = 100f * HU_TO_UNITY;
+        public static float Friction = 8f;
         public static float JumpVelocity = 268f * HU_TO_UNITY;
         public static float AirCap = 320f * HU_TO_UNITY;
 
@@ -18,7 +19,7 @@ namespace mszbhop
             float speed = velocity.magnitude;
             if (speed < 0.1f) return;
 
-            float drop = speed * Friction * Time.deltaTime;
+            float drop = speed * Friction * Time.fixedDeltaTime;
             float newSpeed = Mathf.Max(speed - drop, 0.0f);
 
             velocity *= newSpeed / speed;
@@ -29,7 +30,7 @@ namespace mszbhop
             float addSpeed = wishSpeed - currentSpeed;
             if (addSpeed <= 0) return;
 
-            float accelSpeed = accel * Time.deltaTime * wishSpeed;
+            float accelSpeed = accel * Time.fixedDeltaTime * wishSpeed;
             if (accelSpeed > addSpeed) accelSpeed = addSpeed;
 
             velocity += wishDir * accelSpeed;

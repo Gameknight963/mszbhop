@@ -1,5 +1,7 @@
-﻿using UnityEngine;
-using MelonLoader;
+﻿using MelonLoader;
+using MelonLoader.Utils;
+using UnityEngine;
+using System.IO;
 
 namespace mszbhop
 {
@@ -62,10 +64,18 @@ namespace mszbhop
             mesh.uv = uvs;
             mesh.RecalculateNormals();
 
+            string texturePath = Path.Combine(MelonEnvironment.ModsDirectory, "mszbhop", "grass.png");
+            byte[] bytes = File.ReadAllBytes(texturePath);
+            Texture2D tex = new Texture2D(2, 2, TextureFormat.RGBA32, false);
+
+            ImageConversion.LoadImage(tex, bytes);
             GameObject terrainObj = new GameObject("ProceduralTerrain");
             terrainObj.transform.position = new Vector3(0, -36f, 0);
             terrainObj.AddComponent<MeshFilter>().mesh = mesh;
-            terrainObj.AddComponent<MeshRenderer>().material = new Material(Shader.Find("Standard"));
+            MeshRenderer renderer = terrainObj.AddComponent<MeshRenderer>();
+            renderer.material = new Material(Shader.Find("Standard"));
+            renderer.material.mainTexture = tex;
+            renderer.material.mainTextureScale = new Vector2(50f, 50f);
             terrainObj.AddComponent<MeshCollider>().sharedMesh = mesh;
         }
     }

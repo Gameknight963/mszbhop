@@ -3,6 +3,7 @@ using MelonLoader.Utils;
 using mszbhop;
 using System.IO;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 [RegisterTypeInIl2Cpp]
 public class BhopMovement : MonoBehaviour
@@ -19,6 +20,8 @@ public class BhopMovement : MonoBehaviour
         _rb.drag = 0f;
         _rb.angularDrag = 0f;
         _rb.freezeRotation = true;
+        _rb.collisionDetectionMode = CollisionDetectionMode.Continuous;
+        _rb.interpolation = RigidbodyInterpolation.Interpolate;
 
         PhysicMaterial mat = new PhysicMaterial();
         mat.dynamicFriction = 0f;
@@ -26,6 +29,9 @@ public class BhopMovement : MonoBehaviour
         mat.bounciness = 0f;
         mat.frictionCombine = PhysicMaterialCombine.Minimum;
         _col.material = mat;
+
+        MelonLogger.Msg($"height: {_col.height}, radius: {_col.radius}, center: {_col.center}");
+        MelonLogger.Msg($"interpolation: {_rb.interpolation}");
     }
 
     void FixedUpdate()
@@ -45,7 +51,8 @@ public class BhopMovement : MonoBehaviour
 
         if (isGrounded)
         {
-            velocity.y = 0f;
+            if (_rb.velocity.y < 0)
+                velocity.y = -2f;
             MovementFunctions.GroundMove(ref velocity, wishDir, true);
         }
         else
@@ -54,12 +61,13 @@ public class BhopMovement : MonoBehaviour
             velocity.y -= 20f * Time.fixedDeltaTime;
         }
 
-        if ((Input.GetKeyDown(KeyCode.Space) && isGrounded))
+        if ((Input.GetKeyDown(KeyCode.Space) || Input.GetAxis("Mouse ScrollWheel") != 0) && isGrounded)
         {
             velocity.y = MovementFunctions.JumpVelocity;
         }
 
         _rb.velocity = velocity;
+        MelonLogger.Msg($"isGrounded: {isGrounded}, pos.y: {transform.position.y}, vel.y: {_rb.velocity.y}");
     }
 
     private bool IsGrounded()
@@ -67,7 +75,7 @@ public class BhopMovement : MonoBehaviour
         _col.enabled = false;
 
         Vector3 origin = transform.position + _col.center;
-        float rayLength = _col.height * 0.5f;
+        float rayLength = _col.height * 0.5f + 0.3f;
         bool hit = Physics.Raycast(origin, Vector3.down, rayLength);
         _col.enabled = true;
         return hit;
