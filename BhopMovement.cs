@@ -1,5 +1,7 @@
 ﻿using MelonLoader;
+using MelonLoader.Utils;
 using mszbhop;
+using System.IO;
 using UnityEngine;
 
 [RegisterTypeInIl2Cpp]
@@ -17,6 +19,13 @@ public class BhopMovement : MonoBehaviour
         _rb.drag = 0f;
         _rb.angularDrag = 0f;
         _rb.freezeRotation = true;
+
+        PhysicMaterial mat = new PhysicMaterial();
+        mat.dynamicFriction = 0f;
+        mat.staticFriction = 0f;
+        mat.bounciness = 0f;
+        mat.frictionCombine = PhysicMaterialCombine.Minimum;
+        _col.material = mat;
     }
 
     void FixedUpdate()

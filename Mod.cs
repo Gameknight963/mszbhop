@@ -10,6 +10,7 @@ using UnityEngine;
 
 namespace mszbhop
 {
+
     public class Mod : MelonMod
     {
         public static GameObject Kiri;
@@ -21,6 +22,9 @@ namespace mszbhop
             Component comp = Kiri.GetComponent<kiriMoveBasic>();
             UnityEngine.Object.Destroy(comp);
             Kiri.AddComponent<BhopMovement>();
+
+            GameObject terrainGen = new GameObject("TerrainGenerator");
+            terrainGen.AddComponent<TerrainGenerator>();
         }
     }
 }
