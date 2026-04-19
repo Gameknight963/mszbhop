@@ -69,11 +69,13 @@ public class BhopMovement : MonoBehaviour
     private bool IsGrounded()
     {
         _col.enabled = false;
-
-        Vector3 origin = transform.position + _col.center;
-        float rayLength = _col.height * 0.5f + 0.3f;
-        bool hit = Physics.Raycast(origin, Vector3.down, rayLength);
+        if (Physics.Raycast(transform.position + _col.center, Vector3.down, out RaycastHit hit, _col.height * 0.5f + 0.3f))
+        {
+            _col.enabled = true;
+            float angle = Vector3.Angle(hit.normal, Vector3.up);
+            return angle < 45f;
+        }
         _col.enabled = true;
-        return hit;
+        return false;
     }
 }

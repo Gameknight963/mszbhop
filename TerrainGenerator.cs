@@ -72,11 +72,50 @@ namespace mszbhop
             GameObject terrainObj = new GameObject("ProceduralTerrain");
             terrainObj.transform.position = new Vector3(0, -36f, 0);
             terrainObj.AddComponent<MeshFilter>().mesh = mesh;
+            terrainObj.transform.parent = transform;
             MeshRenderer renderer = terrainObj.AddComponent<MeshRenderer>();
             renderer.material = new Material(Shader.Find("Standard"));
             renderer.material.mainTexture = tex;
             renderer.material.mainTextureScale = new Vector2(50f, 50f);
             terrainObj.AddComponent<MeshCollider>().sharedMesh = mesh;
+
+            GameObject waterObj = GameObject.CreatePrimitive(PrimitiveType.Plane);
+            waterObj.name = "Water";
+            waterObj.transform.parent = transform;
+            waterObj.transform.position = new Vector3(0, -24f, 0);
+            waterObj.transform.localScale = new Vector3(50f, 1f, 50f);
+
+            // i couldnt figure out how to disable backface culling
+            GameObject waterBack = GameObject.CreatePrimitive(PrimitiveType.Plane);
+            waterBack.name = "WaterBack";
+            waterBack.transform.parent = waterObj.transform;
+            waterBack.transform.localPosition = Vector3.zero;
+            waterBack.transform.localRotation = Quaternion.Euler(180f, 0f, 0f);
+            waterBack.transform.localScale = Vector3.one;
+
+            Material waterMat = new Material(Shader.Find("Standard"));
+            waterMat.color = new Color(0.1f, 0.4f, 0.8f, 0.6f);
+            waterMat.SetFloat("_Mode", 3f);
+            waterMat.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.SrcAlpha);
+            waterMat.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
+            waterMat.SetInt("_ZWrite", 0);
+            waterMat.EnableKeyword("_ALPHABLEND_ON");
+            waterMat.renderQueue = 3000;
+            waterMat.SetInt("_Cull", (int)UnityEngine.Rendering.CullMode.Off);
+            byte[] normalBytes = File.ReadAllBytes(Path.Combine(MelonEnvironment.ModsDirectory, "mszbhop", "water.png"));
+            Texture2D normalTex = new Texture2D(2, 2, TextureFormat.RGBA32, false);
+            ImageConversion.LoadImage(normalTex, normalBytes);
+            waterMat.SetTexture("_BumpMap", normalTex);
+            waterMat.EnableKeyword("_NORMALMAP");
+            waterMat.mainTextureScale = new Vector2(20f, 20f);
+            waterMat.SetTextureScale("_BumpMap", new Vector2(20f, 20f));
+            waterObj.GetComponent<MeshRenderer>().material = waterMat;
+            Object.Destroy(waterObj.GetComponent<Collider>());
+            waterObj.AddComponent<WaterAnimator>();
+
+            waterBack.GetComponent<MeshRenderer>().material = waterMat;
+            Object.Destroy(waterBack.GetComponent<Collider>());
+            waterBack.AddComponent<WaterAnimator>();
         }
     }
 }
