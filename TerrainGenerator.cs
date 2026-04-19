@@ -8,6 +8,8 @@ namespace mszbhop
     [RegisterTypeInIl2Cpp]
     public class TerrainGenerator : MonoBehaviour
     {
+        private float _terrainYOffset;
+
         private void Start()
         {
             int resolution = 256;
@@ -57,6 +59,13 @@ namespace mszbhop
                 }
             }
 
+            float cx = size * 0.5f + offsetX;
+            float cz = size * 0.5f + offsetZ;
+            float centerH = 0f;
+            centerH += Mathf.PerlinNoise(cx * 0.003f, cz * 0.003f) * 0.6f;
+            centerH += Mathf.PerlinNoise(cx * 0.01f, cz * 0.01f) * 0.3f;
+            centerH += Mathf.PerlinNoise(cx * 0.04f, cz * 0.04f) * 0.1f;
+
             Mesh mesh = new Mesh();
             mesh.indexFormat = UnityEngine.Rendering.IndexFormat.UInt32;
             mesh.vertices = vertices;
@@ -70,7 +79,6 @@ namespace mszbhop
 
             ImageConversion.LoadImage(tex, bytes);
             GameObject terrainObj = new GameObject("ProceduralTerrain");
-            terrainObj.transform.position = new Vector3(0, -36f, 0);
             terrainObj.AddComponent<MeshFilter>().mesh = mesh;
             terrainObj.transform.parent = transform;
             MeshRenderer renderer = terrainObj.AddComponent<MeshRenderer>();
@@ -79,10 +87,13 @@ namespace mszbhop
             renderer.material.mainTextureScale = new Vector2(50f, 50f);
             terrainObj.AddComponent<MeshCollider>().sharedMesh = mesh;
 
+            _terrainYOffset = -(centerH * height) - 1;
+            terrainObj.transform.position = new Vector3(0, _terrainYOffset, 0);
+
             GameObject waterObj = GameObject.CreatePrimitive(PrimitiveType.Plane);
             waterObj.name = "Water";
             waterObj.transform.parent = transform;
-            waterObj.transform.position = new Vector3(0, -24f, 0);
+            waterObj.transform.position = new Vector3(0, -5f, 0);
             waterObj.transform.localScale = new Vector3(50f, 1f, 50f);
 
             // i couldnt figure out how to disable backface culling
