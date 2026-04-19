@@ -1,25 +1,17 @@
 ﻿using UnityEngine;
-using Newtonsoft.Json;
 
 namespace mszbhop
 {
     public static class MovementFunctions
     {
-        private const float HU_TO_UNITY = 0.0254f;
-
-        public static float MaxGroundSpeed = 320f * HU_TO_UNITY;
-        public static float GroundAccel = 600f * HU_TO_UNITY;
-        public static float AirAccel = 100f * HU_TO_UNITY;
-        public static float Friction = 8f;
-        public static float JumpVelocity = 268f * HU_TO_UNITY;
-        public static float AirCap = 320f * HU_TO_UNITY;
+        private static MovementConfig MCfg => ConfigManager.MovementConfig;
 
         public static void ApplyFriction(ref Vector3 velocity)
         {
             float speed = velocity.magnitude;
             if (speed < 0.1f) return;
 
-            float drop = speed * Friction * Time.fixedDeltaTime;
+            float drop = speed * MCfg.Friction * Time.fixedDeltaTime;
             float newSpeed = Mathf.Max(speed - drop, 0.0f);
 
             velocity *= newSpeed / speed;
@@ -38,14 +30,14 @@ namespace mszbhop
 
         public static void AirMove(ref Vector3 velocity, Vector3 wishDir)
         {
-            float wishSpeed = MaxGroundSpeed;
+            float wishSpeed = MCfg.MaxGroundSpeedUnity;
 
-            if (wishSpeed > AirCap)
+            if (wishSpeed > MCfg.AirCapUnity)
             {
-                wishSpeed = AirCap;
+                wishSpeed = MCfg.AirCapUnity;
             }
 
-            Accelerate(ref velocity, wishDir, wishSpeed, AirAccel);
+            Accelerate(ref velocity, wishDir, wishSpeed, MCfg.AirAccelUnity);
         }
 
         public static void GroundMove(ref Vector3 velocity, Vector3 wishDir, bool applyFriction)
@@ -55,8 +47,8 @@ namespace mszbhop
                 ApplyFriction(ref velocity);
             }
 
-            float wishSpeed = MaxGroundSpeed;
-            Accelerate(ref velocity, wishDir, wishSpeed, GroundAccel);
+            float wishSpeed = MCfg.MaxGroundSpeedUnity;
+            Accelerate(ref velocity, wishDir, wishSpeed, MCfg.GroundAccelUnity);
         }
     }
 }

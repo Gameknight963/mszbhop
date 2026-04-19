@@ -29,9 +29,6 @@ public class BhopMovement : MonoBehaviour
         mat.bounciness = 0f;
         mat.frictionCombine = PhysicMaterialCombine.Minimum;
         _col.material = mat;
-
-        MelonLogger.Msg($"height: {_col.height}, radius: {_col.radius}, center: {_col.center}");
-        MelonLogger.Msg($"interpolation: {_rb.interpolation}");
     }
 
     void FixedUpdate()
@@ -63,11 +60,10 @@ public class BhopMovement : MonoBehaviour
 
         if ((Input.GetKeyDown(KeyCode.Space) || Input.GetAxis("Mouse ScrollWheel") != 0) && isGrounded)
         {
-            velocity.y = MovementFunctions.JumpVelocity;
+            velocity.y = ConfigManager.MovementConfig.JumpVelocityUnity;
         }
 
         _rb.velocity = velocity;
-        MelonLogger.Msg($"isGrounded: {isGrounded}, pos.y: {transform.position.y}, vel.y: {_rb.velocity.y}");
     }
 
     private bool IsGrounded()
