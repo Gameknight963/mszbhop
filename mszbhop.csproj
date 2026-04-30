@@ -302,9 +302,6 @@
     <Compile Include="MovementConfig.cs" />
     <Compile Include="MovementFunctions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="TerrainGenerator.cs" />
-    <Compile Include="WaterAnimator.cs" />
-    <Compile Include="WaterVolume.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="images\grass.png">
