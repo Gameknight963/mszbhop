@@ -1,9 +1,8 @@
-﻿using MelonLoader;
+﻿using JetBrains.Annotations;
+using MelonLoader;
 using MelonLoader.Utils;
 using mszbhop;
-using System.IO;
 using UnityEngine;
-using UnityEngine.UIElements;
 
 [RegisterTypeInIl2Cpp]
 public class BhopMovement : MonoBehaviour
