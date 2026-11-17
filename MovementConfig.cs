@@ -14,10 +14,15 @@ namespace mszbhop
         public float JumpVelocity { get; set; } = 268f;
         public float AirCap { get; set; } = 320f;
 
+        [JsonIgnore]
         public float MaxGroundSpeedUnity => MaxGroundSpeed * HU_TO_UNITY;
+        [JsonIgnore]
         public float GroundAccelUnity => GroundAccel * HU_TO_UNITY;
+        [JsonIgnore]
         public float AirAccelUnity => AirAccel * HU_TO_UNITY;
+        [JsonIgnore]
         public float JumpVelocityUnity => JumpVelocity * HU_TO_UNITY;
+        [JsonIgnore]
         public float AirCapUnity => AirCap * HU_TO_UNITY;
     }
 }

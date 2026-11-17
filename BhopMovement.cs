@@ -1,80 +1,82 @@
-﻿using JetBrains.Annotations;
-using MelonLoader;
-using MelonLoader.Utils;
-using mszbhop;
-using UnityEngine;
+﻿using UnityEngine;
 
-[RegisterTypeInIl2Cpp]
-public class BhopMovement : MonoBehaviour
+namespace mszbhop
 {
-    private Rigidbody _rb;
-    private CapsuleCollider _col;
-
-    void Start()
+    [RequireComponent(typeof(Rigidbody))]
+    [RequireComponent(typeof(CapsuleCollider))]
+    public class BhopMovement : MonoBehaviour
     {
-        _rb = Mod.Kiri.GetComponent<Rigidbody>();
-        _col = Mod.Kiri.GetComponent<CapsuleCollider>();
+        private Rigidbody _rb = null!;
+        private CapsuleCollider _col = null!;
 
-        _rb.useGravity = false;
-        _rb.drag = 0f;
-        _rb.angularDrag = 0f;
-        _rb.freezeRotation = true;
-        _rb.collisionDetectionMode = CollisionDetectionMode.Continuous;
-        _rb.interpolation = RigidbodyInterpolation.Interpolate;
-
-        PhysicMaterial mat = new PhysicMaterial();
-        mat.dynamicFriction = 0f;
-        mat.staticFriction = 0f;
-        mat.bounciness = 0f;
-        mat.frictionCombine = PhysicMaterialCombine.Minimum;
-        _col.material = mat;
-    }
-
-    void FixedUpdate()
-    {
-        Vector2 _moveInput = new Vector2(
-            Input.GetAxisRaw("Horizontal"),
-            Input.GetAxisRaw("Vertical")
-        );
-
-        bool isGrounded = IsGrounded();
-
-        Vector3 velocity = _rb.velocity;
-
-        Vector3 wishDir = transform.TransformDirection(
-            new Vector3(_moveInput.x, 0f, _moveInput.y)
-        ).normalized;
-
-        if (isGrounded)
+        void Start()
         {
-            if (_rb.velocity.y < 0)
-                velocity.y = -2f;
-            MovementFunctions.GroundMove(ref velocity, wishDir, true);
-        }
-        else
-        {
-            MovementFunctions.AirMove(ref velocity, wishDir);
-            velocity.y -= 20f * Time.fixedDeltaTime;
+            _rb = gameObject.GetComponent<Rigidbody>() ?? throw new Exception();
+            _col = gameObject.GetComponent<CapsuleCollider>() ?? throw new Exception();
+
+            _rb.useGravity = false;
+            _rb.drag = 0f;
+            _rb.angularDrag = 0f;
+            _rb.freezeRotation = true;
+            _rb.collisionDetectionMode = CollisionDetectionMode.Continuous;
+            _rb.interpolation = RigidbodyInterpolation.Interpolate;
+
+            PhysicMaterial mat = new PhysicMaterial();
+            mat.dynamicFriction = 0f;
+            mat.staticFriction = 0f;
+            mat.bounciness = 0f;
+            mat.frictionCombine = PhysicMaterialCombine.Minimum;
+            _col.material = mat;
         }
 
-        if ((Input.GetKeyDown(KeyCode.Space) || Input.GetAxis("Mouse ScrollWheel") != 0) && isGrounded)
+        void FixedUpdate()
         {
-            velocity.y = ConfigManager.MovementConfig.JumpVelocityUnity;
+            Vector2 _moveInput = new Vector2(
+                Input.GetAxisRaw("Horizontal"),
+                Input.GetAxisRaw("Vertical")
+            );
+
+            bool isGrounded = IsGrounded();
+
+            Vector3 velocity = _rb.velocity;
+
+            Vector3 wishDir = transform.TransformDirection(
+                new Vector3(_moveInput.x, 0f, _moveInput.y)
+            ).normalized;
+
+            if (isGrounded)
+            {
+                if (_rb.velocity.y < 0)
+                    velocity.y = -2f;
+                MovementFunctions.GroundMove(ref velocity, wishDir, true);
+            }
+            else
+            {
+                MovementFunctions.AirMove(ref velocity, wishDir);
+                velocity.y -= 20f * Time.fixedDeltaTime;
+            }
+
+            if ((Input.GetKeyDown(KeyCode.Space) || Input.GetAxis("Mouse ScrollWheel") != 0) && isGrounded)
+            {
+                velocity.y = ConfigManager.MovementConfig.JumpVelocityUnity;
+            }
+
+            _rb.velocity = velocity;
         }
 
-        _rb.velocity = velocity;
-    }
-
-    private bool IsGrounded()
-    {
-        _col.enabled = false;
-        if (Physics.Raycast(transform.position + _col.center, Vector3.down, out RaycastHit hit, _col.height * 0.5f + 0.3f))
+        private bool IsGrounded()
         {
+            _col.enabled = false;
+            _col.enabled = false;
+            if (Physics.Raycast(transform.position + _col.center, Vector3.down, out RaycastHit hit, _col.height * 0.5f + 0.3f))
+            {
+                _col.enabled = true;
+                float angle = Vector3.Angle(hit.normal, Vector3.up);
+                return angle < 45f;
+            }
             _col.enabled = true;
-            float angle = Vector3.Angle(hit.normal, Vector3.up);
-            return angle < 45f;
+            return false;
         }
-        _col.enabled = true;
-        return false;
     }
+
 }
